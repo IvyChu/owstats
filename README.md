@@ -20,3 +20,11 @@ This will create a file OWstats.csv with your stats. I'm a support main, so I th
 
 This scrilt is hitting the OWAPI at https://owapi.net which is processing the data from the official OW website and converting it to JSON. 
 More info about their project can be found here: https://github.com/Fuyukai/OWAPI
+
+## To-Do
+
+- Add other platforms 
+- Add other roles
+- Convert to using a database (maybe SQLite?)
+- Enable tracking multiple accounts
+- Add some visualisation of data
