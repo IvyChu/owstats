@@ -57,7 +57,7 @@ class CompStats(db.Model):
     ctime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<CompStats games: {self.games_played}, open: {self.rating_open}, tank: {self.rating_tank}, dps: {self.rating_damage}, support: {self.rating_support}>'
+        return f'<CompStats games: {self.games_played}, open: {self.rating_avg}, tank: {self.rating_tank}, dps: {self.rating_damage}, support: {self.rating_support}>'
 
 
 @app.route('/')
