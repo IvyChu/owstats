@@ -14,7 +14,7 @@ This scrilt is hitting the OWAPI at https://ow-api.com which is processing the d
 
 ## Recent changes
 
-# 2021-07-20
+### 2021-07-20
 
 - Switched from using a CSV file to using SQLite database. 
 - Switched from https://owapi.net to https://ow-api.com
