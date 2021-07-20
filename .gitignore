@@ -1,0 +1,7 @@
+*.log
+OWstats.csv
+*.pyc
+*.db
+*.db-journal
+__pycache__/*
+.vscode/settings.json
