@@ -4,9 +4,18 @@
 {% include 'head.html' %}
 
 <body>
-
-
   <section role="main" class="section">
+    <nav class="breadcrumb is-centered" aria-label="breadcrumbs">
+      <ul>
+        <li><a href="{{ url_for('index')}}">OWstats</a></li>
+        {% if user %}
+        <li class="is-active"><a href="#" aria-current="page">{{ user.username }}</a></li>
+        {% endif %}
+        {% if form %}
+        <li class="is-active"><a href="#" aria-current="page"> Add user </a></li>
+        {% endif %}
+      </ul>
+    </nav>
       
       {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
