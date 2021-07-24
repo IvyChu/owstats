@@ -1,0 +1,29 @@
+<div class="card is-shadowless has-text-left-mobile">
+    <div class="card-content">
+        <figure class="image is-128x128 is-centered is-hidden-mobile">
+            <img src="{{ user.icon }}">
+        </figure>
+        <figure class="image is-128x128 is-hidden-tablet is-pulled-right">
+            <img src="{{ user.icon }}">
+        </figure>
+
+
+        <div class="content pt-3">
+            <p class="title is-4">{{ user.username }}</p>
+            <div class="is-5">
+                <div><span class="icon is-left">
+                    <i class="fa fa-certificate"></i>
+                </span> {{user.endorsement}}</div>
+                <div><span class="icon is-left">
+                    <i class="fa fa-globe"></i>
+                </span> {{user.region}}</div>
+                <div><span class="icon is-left">
+                    <i class="fa fa-gamepad"></i>
+                </span> {{user.platform}}</div>
+                <div><span class="icon is-left">
+                    <i class="fa fa-calendar"></i>
+                </span> Added <time datetime="{{ user.ctime.strftime('%Y-%m-%d') }}">{{ user.ctime.strftime('%B %Y') }}</time></div>
+            </div>
+        </div>
+    </div>
+</div>

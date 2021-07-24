@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'head.html' %}
+
+<body>
+
+
+  <section role="main" class="section">
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="columns">
+        <div class="column is-hidden-touch"></div>
+        <div class="column is-three-fifths-desktop">
+          {% for category, message in messages %}
+          <article class="message is-{{ category }}">
+            <div class="message-body">
+              {{ message }}
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        <div class="column is-hidden-touch"></div>
+      </div>
+      {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+      
+  </section>
+
+  {% include 'footer.html' %}
+
+</body>
+
+</html>

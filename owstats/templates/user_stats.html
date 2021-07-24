@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="columns">
+  <div class="column is-hidden-touch"></div>
+  <div class="column is-one-fifth">
+    {% include 'profile_header.html' %}
+  </div>
+
+  <div class="column is-three-fifths-desktop">
+    <div class="tabs">
+      <ul>
+        <li class="is-active">
+          <a href="">
+            <span class="icon is-small"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+            <span>Stats</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <table class="table is-fullwidth is-hoverable">
+        <thead>
+            <tr>
+                <th><abbr title="Games played">GP</abbr></th>
+                <th><abbr title="Won">W</abbr></th>
+                <!-- <th><abbr title="Win percentage">WP</abbr></th> -->
+                <th><abbr title="Rating average">RA</abbr></th>
+                <th><abbr title="Rating tank">RT</abbr></th>
+                <th><abbr title="Rating damage">RD</abbr></th>
+                <th><abbr title="Rating support">RS</abbr></th>
+                <th><abbr title="Date logged">Date</abbr></th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th><abbr title="Games played">GP</abbr></th>
+                <th><abbr title="Won">W</abbr></th>
+                <!-- <th><abbr title="Win percentage">WP</abbr></th> -->
+                <th><abbr title="Rating average">RA</abbr></th>
+                <th><abbr title="Rating tank">RT</abbr></th>
+                <th><abbr title="Rating damage">RD</abbr></th>
+                <th><abbr title="Rating support">RS</abbr></th>
+                <th><abbr title="Date logged">Date</abbr></th>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for stats in user.comp_stats %}
+            <tr>
+                <td>{{ stats.games_played }}</td>
+                <td>{{ stats.games_won }}</td>
+
+                <td>{{ stats.rating_avg }}</td>
+                <td>{{ stats.rating_tank }}</td>
+                <td>{{ stats.rating_damage }}</td>
+                <td>{{ stats.rating_support }}</td>
+                <td>{{ stats.ctime.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+  <div class="column is-hidden-touch"></div>
+</div>
+{% endblock content %}

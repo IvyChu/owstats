@@ -3,10 +3,10 @@ import logging
 import time
 from socket import gaierror
 
-import requests
 import urllib3
 
 from owstats import db, User, CompStats
+from owstats.utils import get_api_response
 
 logging.basicConfig(filename=f'OWstats-{datetime.datetime.now().strftime("%Y-%m")}.log',
                     level=logging.INFO,
@@ -15,7 +15,6 @@ logging.basicConfig(filename=f'OWstats-{datetime.datetime.now().strftime("%Y-%m"
                     )
 
 
-BASE_URL = 'https://ow-api.com/v1/stats'
 MINUTES_TO_SLEEP = 30
 
 
@@ -37,22 +36,10 @@ class OWstats:
             region = user.region
             username = user.username
 
-            url = f'{BASE_URL}/{platform}/{region}/{username}/profile'
-            logging.info(f'url: {url}')
+            logging.info(f'processing: {platform}/{region}/{username}')
 
             try:
-                response = requests.get(url,
-                                    headers={
-                                        "Host": "ow-api.com",
-                                        "User-Agent": "PythonTest 0.2",
-                                        "DNT": "1",
-                                        "Connection": "keep-alive",
-                                        "Cookie": "__cfduid=df6937f525b58b9a98ac7d59a94d2c4761590714472",
-                                        "Upgrade-Insecure-Requests": '1',
-                                        "Cache-Control": "max-age=0",
-                                        "Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
-                                    }
-                                    )
+                response = get_api_response(platform, region, username)
             except urllib3.exceptions.MaxRetryError:
                 logging.exception("MaxRetryError - Connection problems, let's wait for a while...")
                 self.increase_sleep_time()
@@ -70,6 +57,18 @@ class OWstats:
                     # Get JSON from the response
                     r_json = response.json()
                     # print(r_json)
+
+                    if 'error' in r_json:
+                        logging.error(f"Request error: {r_json['error']}")
+                        if r_json['error'] == "Player not found":
+                            user.active = 0
+                            db.session.commit()
+                            break
+                    
+                    if r_json['private']:
+                            user.active = 0
+                            db.session.commit()
+                            break
 
                     games_played = r_json['competitiveStats']['games']['played']
 

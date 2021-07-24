@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="columns">
+    <div class="column is-hidden-touch"></div>
+    <div class="column is-three-fifths-desktop">
+        <div class="content">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <fieldset>
+                    <legend class="is-size-3 mb-3">{{ legend }}</legend>
+                    <div class="field">
+                        {{ form.username.label(class="label") }}
+                        {% if form.username.errors %}
+                        {{ form.username(class="input is-danger") }}
+                        <div class="help is-danger">
+                            {% for error in form.username.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.username(class="input") }}
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                        <label class="label">{{ form.region.label }} *</label>
+                        <div class="control">
+                            {% for subfield in form.region %}
+                            <label class="radio">
+                                {{ subfield }}
+                                {{ subfield.label }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {% if form.region.errors %}
+                            <div class="help is-danger">
+                                {% for error in form.region.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                        <label class="label">{{ form.platform.label }} *</label>
+                        <div class="control">
+                            {% for subfield in form.platform %}
+                            <label class="radio">
+                                {{ subfield }}
+                                {{ subfield.label }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {% if form.platform.errors %}
+                            <div class="help is-danger">
+                                {% for error in form.platform.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </fieldset>
+                <div class="field mt-2">
+                    <div class="control">
+                        {{ form.submit(class="button is-primary") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="column is-hidden-touch"></div>
+</div>
+{% endblock content %}

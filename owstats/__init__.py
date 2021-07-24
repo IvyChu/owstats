@@ -1,70 +1,102 @@
-from datetime import datetime
+import os
 
-from flask import Flask
+from flask import Flask, flash, redirect, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
+
+from owstats.forms import AddUserForm
+from owstats.utils import get_api_response
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///OWstatsLite.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 db = SQLAlchemy(app)
 
-
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-
-    # platform 	The game platform (pc, etc)
-    # region 	The game region (us, eu, asia)
-    # battletag 	Your battlenet tag, replacing the # with a -
-
-    battletag = db.Column(db.String(20), unique=True, nullable=True)
-
-    # battletag doesn't seem to work for psn at the moment
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    region = db.Column(db.String(10), unique=False, nullable=False)
-    platform = db.Column(db.String(10), unique=False, nullable=False)
-
-    icon = db.Column(db.String(200), unique=True, nullable=True)
-
-    endorsement = db.Column(db.Integer)
-
-    games_played = db.Column(db.Integer, default=0)
-
-    comp_stats = db.relationship('CompStats', backref='player', lazy=True)
-
-    active = db.Column(db.Integer, default=1) # 0 if inactive, 1 if active
-
-    ctime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-    def __repr__(self):
-        return '<User %r>' % self.username
-
-
-class CompStats(db.Model):
-    __tablename__ = 'comp_stats'
-    id = db.Column(db.Integer, primary_key=True)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-    games_played = db.Column(db.Integer)
-    games_won = db.Column(db.Integer)
-
-    rating_avg = db.Column(db.Integer)
-    rating_tank = db.Column(db.Integer)
-    rating_damage = db.Column(db.Integer)
-    rating_support = db.Column(db.Integer)
-
-    ctime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<CompStats games: {self.games_played}, open: {self.rating_avg}, tank: {self.rating_tank}, dps: {self.rating_damage}, support: {self.rating_support}>'
+from owstats.models import User, CompStats
 
 
 @app.route('/')
 def index():
-    return 'Index Page'
+    users = User.query.all()
+    return render_template('select_user.html', title='Select user', legend='Select user', users = users)
 
-@app.route('/stats/<username>')
+
+@app.route('/add', methods=['GET', 'POST'])
+def add_user():
+    form = AddUserForm()
+    if form.validate_on_submit():
+        # Do we have this user already?
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            flash(f'User {user.username} already exists. Here are their collected.', 'success')
+            return redirect(url_for('stats',username=user.username))
+
+        # User not in DB yet, let's check if they exist in OW
+        try:
+            response = get_api_response(form.platform.data, form.region.data, form.username.data)
+        except:
+            flash(f'Problems encountered when adding the user. Make sure the user exists on that platform/region.', 'warning')
+            return redirect(url_for('index'))
+
+        if response:
+            r_json = response.json()
+
+            if 'error' in r_json:
+                flash(f"Error returned from API: {r_json['error']}", 'warning')
+                return redirect(url_for('index'))
+
+            if not r_json['private']:
+                user = User()
+                user.username = form.username.data
+                user.region = form.region.data
+                user.platform = form.platform.data
+                user.games_played = r_json['competitiveStats']['games']['played']
+                user.endorsement = r_json['endorsement']
+                user.icon = r_json['icon']
+                db.session.add(user)
+                db.session.commit()
+
+                cs = CompStats()
+                cs.games_played = user.games_played
+                cs.games_won = r_json['competitiveStats']['games']['won']
+                cs.rating_avg = r_json['rating']
+                for rating in r_json['ratings']:
+                    if rating['role'] == 'tank':
+                        cs.rating_tank = rating['level']
+                    if rating['role'] == 'damage':    
+                        cs.rating_damage = rating['level']
+                    if rating['role'] == 'support': 
+                        cs.rating_support = rating['level']
+                
+                cs.player = user
+
+                db.session.add(cs)
+                db.session.commit()
+
+                flash(f'User {user.username} has been added to the database.', 'success')
+                return redirect(url_for('stats',username=user.username))
+        flash(f"No response from API received. Check connection or something? User not added.", 'warning')
+        return redirect(url_for('index'))
+    return render_template('add_user.html', title='Add user', legend='Add user', form=form)
+
+@app.route('/<username>')
 def stats(username):
     # show the user profile for that user
-    return f'User {username}'
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return render_template('user_stats.html', title=username, user=user)
+    
+    form = AddUserForm()
+    if form.validate_on_submit():
+        user = User()
+        user.username = form.username.data
+        user.region = form.region.data
+        user.platform = form.platform.data
+        user.icon = url_for('static', filename='default.png')
+        db.session.add(user)
+        db.session.commit()
+        flash(f'User {user.username} has been added to the database.', 'success')
+        return redirect(url_for('stats'))
+    form.username.data = username
+    return render_template('add_user.html', title='Add user', legend='Add user', form=form)

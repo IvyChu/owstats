@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="columns">
+    <div class="column is-hidden-touch"></div>
+    <div class="column is-three-fifths-desktop">
+
+        <a class="button is-primary is-rounded" href="{{ url_for('add_user') }}">+ Add user</a>
+
+        <table class="table is-fullwidth is-hoverable">
+            <thead>
+                <tr>
+                    <th>Icon</th>
+                    <th>User</th>
+                    <th>Region</th>
+                    <th>Platform</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><figure class="image is-128x128"><img  src="{{ user.icon }}"></figure></td>
+                    <td><a href="{{ url_for('stats',username=user.username) }}">{{ user.username }}</a></td>
+                    <td>{{ user.region }}</td>
+                    <td>{{ user.platform }}</td>
+                    <td>{{ user.ctime.strftime('%Y-%m-%d') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="column is-hidden-touch"></div>
+</div>
+{% endblock content %}
