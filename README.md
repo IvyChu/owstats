@@ -14,6 +14,11 @@ This scrilt is hitting the OWAPI at https://ow-api.com which is processing the d
 
 ## Recent changes
 
+### 2021-07-24
+
+- Added a Flask & Bulma interface to easily see users and stats
+- Added the ability to add users through the interface
+
 ### 2021-07-20
 
 - Switched from using a CSV file to using SQLite database. 
@@ -26,10 +31,11 @@ This scrilt is hitting the OWAPI at https://ow-api.com which is processing the d
 ## To-Do
 
 - Add some visualisation of data
-- Add an interface for adding users and viewing stats
+- Add documentation to make installation and usage easy
 
 ## Done
 
+- Add an interface for adding users and viewing stats
 - Add other platforms 
 - Add other roles
 - Convert to using a database (maybe SQLite?)
