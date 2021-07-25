@@ -33,6 +33,13 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
+    def get_win_percentage(self):
+        latest_stats = self.comp_stats[-1]
+        games_played = latest_stats.games_played
+        games_won = latest_stats.games_won
+        return round((games_won/games_played)*100, 2)
+
+
 
 class CompStats(db.Model):
     __tablename__ = 'comp_stats'

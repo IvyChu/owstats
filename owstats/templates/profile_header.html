@@ -12,6 +12,9 @@
             <p class="title is-4">{{ user.username }}</p>
             <div class="is-5">
                 <div><span class="icon is-left">
+                    <i class="fa fa-percent"></i>
+                </span> {{ user.get_win_percentage() }}</div>
+                <div><span class="icon is-left">
                     <i class="fa fa-certificate"></i>
                 </span> {{user.endorsement}}</div>
                 <div><span class="icon is-left">
