@@ -1,3 +1,5 @@
+from datetime import datetime, date, timedelta
+
 import requests
 
 
@@ -20,3 +22,11 @@ def get_api_response(platform, region, username):
                         )
 
     return response
+
+
+def check_if_more_than_seven_days(d):
+    now = datetime.now()                
+    return (now - d).days > 7
+
+def is_it_monday():
+    return date.today().weekday() == 0 and datetime.now().hour < 3 # the first runs on Monday

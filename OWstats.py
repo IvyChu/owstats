@@ -7,7 +7,7 @@ from socket import gaierror
 import urllib3
 
 from owstats import CompStats, User, db
-from owstats.utils import get_api_response
+from owstats.utils import get_api_response, check_if_more_than_seven_days, is_it_monday
 
 logging.basicConfig(filename=f'OWstats-{datetime.datetime.now().strftime("%Y-%m")}.log',
                     level=logging.INFO,
@@ -32,6 +32,13 @@ class OWstats:
 
     def log_stats_to_db(self):
         logging.info('DB stats call')
+        # if it's the first run on Monday, check if any of inactive players played in the last week
+        if is_it_monday():
+            for user in User.query.filter_by(active=2).all():
+                user.active = 1
+                db.session.commit()
+
+        # get stats for active players
         for user in User.query.filter_by(active=1).all():
             platform = user.platform
             region = user.region
@@ -65,11 +72,18 @@ class OWstats:
                             user.active = 0
                             db.session.commit()
                             break
+                        else:
+                            logging.error(f"json.error: {r_json['error']}")
+                            break
                     
                     if r_json['private']:
-                            user.active = 0
-                            db.session.commit()
-                            break
+                        user.active = 0
+                        db.session.commit()
+                        break
+
+                    user.endorsement = r_json['endorsement']
+                    user.icon = r_json['icon']
+                    db.session.commit()
 
                     games_played = r_json['competitiveStats']['games']['played']
 
@@ -92,8 +106,9 @@ class OWstats:
                         db.session.commit()
 
                         user.games_played = games_played
-                        user.endorsement = r_json['endorsement']
-                        user.icon = r_json['icon']
+                        db.session.commit()
+                    elif check_if_more_than_seven_days(user.comp_stats[-1].ctime):
+                        user.active = 2     # inactive for a week or more
                         db.session.commit()
 
                 except KeyError:
