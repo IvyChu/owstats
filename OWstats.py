@@ -1,11 +1,12 @@
 import datetime
 import logging
+import sys
 import time
 from socket import gaierror
 
 import urllib3
 
-from owstats import db, User, CompStats
+from owstats import CompStats, User, db
 from owstats.utils import get_api_response
 
 logging.basicConfig(filename=f'OWstats-{datetime.datetime.now().strftime("%Y-%m")}.log',
@@ -15,7 +16,7 @@ logging.basicConfig(filename=f'OWstats-{datetime.datetime.now().strftime("%Y-%m"
                     )
 
 
-MINUTES_TO_SLEEP = 30
+MINUTES_TO_SLEEP = 120
 
 
 class OWstats:
@@ -110,7 +111,11 @@ def main():
         logging.info('Going for another run')
         try:
             ow_stats.log_stats_to_db()
-            ow_stats.reset_sleep_time()
+            if len(sys.argv) > 1 and sys.argv[1] == '-c':
+                ow_stats.reset_sleep_time()
+            else:
+                logging.info('Run finished, exiting.')
+                return
         except ConnectionResetError:
             logging.exception('ConnectionResetError')
             ow_stats.increase_sleep_time()
