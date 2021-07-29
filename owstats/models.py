@@ -18,7 +18,7 @@ class User(db.Model):
     region = db.Column(db.String(10), unique=False, nullable=False)
     platform = db.Column(db.String(10), unique=False, nullable=False)
 
-    icon = db.Column(db.String(200), unique=True, nullable=True)
+    icon = db.Column(db.String(200), unique=False, nullable=True)
 
     endorsement = db.Column(db.Integer)
 
