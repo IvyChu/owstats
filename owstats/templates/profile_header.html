@@ -11,16 +11,16 @@
         <div class="content pt-3">
             <p class="title is-4">{{ user.username }}</p>
             <div class="is-5">
-                <div><span class="icon is-left">
+                <div title="Win percentage"><span class="icon is-left">
                     <i class="fa fa-percent"></i>
                 </span> {{ user.get_win_percentage() }}</div>
-                <div><span class="icon is-left">
+                <div title="Endorsement"><span class="icon is-left">
                     <i class="fa fa-certificate"></i>
                 </span> {{user.endorsement}}</div>
-                <div><span class="icon is-left">
+                <div title="Region"><span class="icon is-left">
                     <i class="fa fa-globe"></i>
                 </span> {{user.region}}</div>
-                <div><span class="icon is-left">
+                <div title="Platform"><span class="icon is-left">
                     <i class="fa fa-gamepad"></i>
                 </span> {{user.platform}}</div>
                 <div><span class="icon is-left">

@@ -11,9 +11,9 @@
                 <tr>
                     <th>Icon</th>
                     <th>User</th>
-                    <th>Region</th>
-                    <th>Platform</th>
-                    <th>Date</th>
+                    <th class="is-hidden-touch">Region</th>
+                    <th class="is-hidden-touch">Platform</th>
+                    <th class="is-hidden-mobile">Date added</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,9 +21,9 @@
                 <tr>
                     <td><figure class="image is-128x128"><img  src="{{ user.icon }}"></figure></td>
                     <td><a href="{{ url_for('stats',username=user.username) }}">{{ user.username }}</a></td>
-                    <td>{{ user.region }}</td>
-                    <td>{{ user.platform }}</td>
-                    <td>{{ user.ctime.strftime('%Y-%m-%d') }}</td>
+                    <td class="is-hidden-touch">{{ user.region }}</td>
+                    <td class="is-hidden-touch">{{ user.platform }}</td>
+                    <td class="is-hidden-mobile">{{ user.ctime.strftime('%Y-%m-%d') }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

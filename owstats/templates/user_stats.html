@@ -53,7 +53,7 @@
                 <td>{{ stats.rating_tank }}</td>
                 <td>{{ stats.rating_damage }}</td>
                 <td>{{ stats.rating_support }}</td>
-                <td>{{ stats.ctime.strftime('%Y-%m-%d') }}</td>
+                <td title="{{ stats.ctime.strftime('%H:%M:%S') }}">{{ stats.ctime.strftime('%Y-%m-%d') }}</td>
             </tr>
             {% endfor %}
         </tbody>
