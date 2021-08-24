@@ -7,7 +7,7 @@ from socket import gaierror
 import urllib3
 
 from owstats import CompStats, User, db
-from owstats.utils import get_api_response, check_if_more_than_seven_days, is_it_monday
+from owstats.utils import get_api_response, check_if_more_than_seven_days, is_it_monday, make_plot
 
 logging.basicConfig(filename=f'OWstats-{datetime.datetime.now().strftime("%Y-%m")}.log',
                     level=logging.INFO,
@@ -107,6 +107,8 @@ class OWstats:
 
                         user.games_played = games_played
                         db.session.commit()
+
+                        make_plot(user)
                     elif check_if_more_than_seven_days(user.comp_stats[-1].ctime):
                         user.active = 2     # inactive for a week or more
                         db.session.commit()

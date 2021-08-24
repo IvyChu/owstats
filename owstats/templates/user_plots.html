@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="columns">
+  <div class="column is-hidden-touch"></div>
+  <div class="column is-one-fifth">
+    {% include 'profile_header.html' %}
+  </div>
+
+  <div class="column is-three-fifths-desktop">
+    <div class="tabs">
+      <ul>
+        <li>
+          <a href="{{ url_for('stats', username=user.username) }}">
+            <span class="icon is-small"><i class="fa fa-table" aria-hidden="true"></i></span>
+            <span>Stats</span>
+          </a>
+        </li>
+        <li class="is-active">
+          <a href="{{ url_for('chart', username=user.username) }}">
+            <span class="icon is-small"><i class="fa fa-line-chart " aria-hidden="true"></i></span>
+            <span>Chart</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <figure class="image">
+      <img src="{{ url_for('static', filename='plots/' + plot_fn) }}">
+    </figure>
+  </div>
+  <div class="column is-hidden-touch"></div>
+</div>
+{% endblock content %}

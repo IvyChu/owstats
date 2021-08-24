@@ -8,7 +8,7 @@ from owstats.utils import get_api_response
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///OWstatsLite.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OWSTATS_DB')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 db = SQLAlchemy(app)
@@ -18,7 +18,7 @@ from owstats.models import User, CompStats
 
 @app.route('/')
 def index():
-    users = User.query.all()
+    users = User.query.order_by(User.ctime).all()
     return render_template('select_user.html', title='Select user', legend='Select user', users = users)
 
 
@@ -88,15 +88,15 @@ def stats(username):
         return render_template('user_stats.html', title=username, user=user)
     
     form = AddUserForm()
-    if form.validate_on_submit():
-        user = User()
-        user.username = form.username.data
-        user.region = form.region.data
-        user.platform = form.platform.data
-        user.icon = url_for('static', filename='default.png')
-        db.session.add(user)
-        db.session.commit()
-        flash(f'User {user.username} has been added to the database.', 'success')
-        return redirect(url_for('stats'))
     form.username.data = username
+    flash(f"Player {username} doesn't exist in the database. Check spelling or add them.", 'warning')
     return render_template('add_user.html', title='Add user', legend='Add user', form=form)
+
+
+@app.route('/<username>/chart')
+def chart(username):
+    # show the user profile for that user
+    user = User.query.filter_by(username=username).first()
+    if user:
+        plot_fn = f"{user.username}_{user.platform}_{user.region}.png"
+        return render_template('user_plots.html', title=username, user=user, plot_fn=plot_fn)

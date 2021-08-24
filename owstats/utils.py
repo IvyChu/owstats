@@ -1,7 +1,10 @@
-from datetime import datetime, date, timedelta
+import os
+from datetime import date, datetime, timedelta
 
+import matplotlib.pyplot as plt
+import pandas as pd
 import requests
-
+from flask import current_app
 
 BASE_URL = 'https://ow-api.com/v1/stats'
 
@@ -28,5 +31,37 @@ def check_if_more_than_seven_days(d):
     now = datetime.now()                
     return (now - d).days > 7
 
+
 def is_it_monday():
     return date.today().weekday() == 0 and datetime.now().hour < 3 # the first runs on Monday
+
+
+def make_plot(user):
+    data = {'Games played': [],
+        'Tank SR': [],
+        'Damage SR': [],
+        'Support SR': []
+       }
+
+    for stat in user.comp_stats:
+        data['Games played'].append(stat.games_played)
+        data['Tank SR'].append(stat.rating_tank)
+        data['Damage SR'].append(stat.rating_damage)
+        data['Support SR'].append(stat.rating_support)
+    
+    df = pd.DataFrame(data,columns=['Games played','Tank SR','Damage SR','Support SR'])
+    
+    plt.plot(df['Games played'], df['Tank SR'], '.:b', label='Tank SR')
+    plt.plot(df['Games played'], df['Damage SR'], '*:r', label='Damage SR')
+    plt.plot(df['Games played'], df['Support SR'], '^:c', label='Support SR')
+    plt.title('SR changes per role', loc = 'left')
+    plt.xlabel('Games played')
+    plt.ylabel('SR')
+    plt.legend()
+    plt.grid(axis = 'y')
+    # plt.show()
+    plot_fn = f"{user.username}_{user.platform}_{user.region}.png"
+    plot_dir = os.path.dirname(__loader__.path)
+    plot_path = os.path.join(plot_dir, 'static/plots', plot_fn)
+    plt.savefig(plot_path, dpi=100)
+    plt.clf()
