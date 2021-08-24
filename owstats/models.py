@@ -29,6 +29,7 @@ class User(db.Model):
     active = db.Column(db.Integer, default=1) # 0 if inactive, 1 if active
 
     ctime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    etime = db.Column(db.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -56,6 +57,8 @@ class CompStats(db.Model):
     rating_support = db.Column(db.Integer)
 
     ctime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    season = db.Column(db.Integer)
 
     def __repr__(self):
         return f'<CompStats games: {self.games_played}, open: {self.rating_avg}, tank: {self.rating_tank}, dps: {self.rating_damage}, support: {self.rating_support}>'
