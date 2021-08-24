@@ -10,7 +10,7 @@ For now, this is just a command line script that runs until killed. It doesn't h
 
 ## Credits
 
-This scrilt is hitting the OWAPI at https://ow-api.com which is processing the data from the official OW website and converting it to JSON. 
+This script is hitting the OWAPI at https://ow-api.com which is processing the data from the official OW website and converting it to JSON. 
 
 ## Recent changes
 
