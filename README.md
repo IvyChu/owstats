@@ -14,6 +14,15 @@ This scrilt is hitting the OWAPI at https://ow-api.com which is processing the d
 
 ## Recent changes
 
+### 2021-08-24
+
+- Added carts for data visualization
+- Added win percentage
+- Added command line args so it can run as cron job
+- Error logging, inactive users, endorsment & icon
+- Grayed out inactive users
+- DB string in environment variable
+
 ### 2021-07-24
 
 - Added a Flask & Bulma interface to easily see users and stats
@@ -30,11 +39,11 @@ This scrilt is hitting the OWAPI at https://ow-api.com which is processing the d
 
 ## To-Do
 
-- Add some visualisation of data
 - Add documentation to make installation and usage easy
 
 ## Done
 
+- Add some visualisation of data
 - Add an interface for adding users and viewing stats
 - Add other platforms 
 - Add other roles
