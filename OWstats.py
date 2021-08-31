@@ -147,7 +147,7 @@ class OWstats:
                         db.session.commit()
 
                         make_plot(user)
-                    elif check_if_more_than_seven_days(user.comp_stats[-1].ctime):
+                    elif check_if_more_than_seven_days(user.comp_stats[0].ctime):
                         user.active = 2     # inactive for a week or more
                         db.session.commit()
 
