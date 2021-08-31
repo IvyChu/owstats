@@ -12,7 +12,7 @@ class Season(db.Model):
     etime = db.Column(db.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Season {self.season}, next_switch_date:{self.next_switch_date:%Y-%m-%d %H:%M}, etime:{self.etime:%Y-%m-%d %H:%M}>'
+        return f'<Season {self.season}, etime:{self.etime:%Y-%m-%d %H:%M}>'
 
 
 class User(db.Model):
@@ -36,7 +36,7 @@ class User(db.Model):
 
     games_played = db.Column(db.Integer, default=0)
 
-    comp_stats = db.relationship('CompStats', backref='player', lazy=True)
+    comp_stats = db.relationship('CompStats', backref='player', lazy=True, order_by="desc(CompStats.ctime)")
 
     active = db.Column(db.Integer, default=1) # 0 if inactive, 1 if active
 

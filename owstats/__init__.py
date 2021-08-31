@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-from owstats.models import CompStats, User
+from owstats.models import CompStats, User, Season
 
 @app.route('/')
 def index():
