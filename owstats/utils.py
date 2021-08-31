@@ -36,6 +36,13 @@ def is_it_monday():
     return date.today().weekday() == 0 and datetime.now().hour < 3 # the first runs on Monday
 
 
+def is_it_new_season(next_switch_date):
+    if next_switch_date is None:
+        return False
+    now = datetime.now() 
+    return next_switch_date < now
+
+
 def make_plot(user):
     data = {'Games played': [],
         'Tank SR': [],
