@@ -6,8 +6,9 @@ from socket import gaierror
 
 import urllib3
 
-from owstats import CompStats, User, db
-from owstats.utils import get_api_response, check_if_more_than_seven_days, is_it_monday, make_plot
+from owstats import CompStats, Season, User, db
+from owstats.utils import (check_if_more_than_seven_days, get_api_response,
+                           is_it_monday, is_it_new_season, make_plot)
 
 logging.basicConfig(filename=f'OWstats-{datetime.datetime.now().strftime("%Y-%m")}.log',
                     level=logging.INFO,
@@ -30,8 +31,28 @@ class OWstats:
     def reset_sleep_time(self):
         self.sleep_time = 60 * MINUTES_TO_SLEEP
 
+    def set_season(self, season_no):
+        new_season = Season()
+        new_season.season = season_no
+        db.session.add(new_season)
+        db.session.commit()
+
+    def set_next(self, season_end):
+        season_end_date = datetime.strptime(season_end, "%Y/%m/%d")
+        current_season = Season.query.order_by(Season.etime.desc()).first()
+        current_season.next_switch_date = season_end_date
+        db.session.commit()
+
+    def current(self):
+        current_season = Season.query.order_by(Season.etime.desc()).first()
+        print(current_season)
+
     def log_stats_to_db(self):
         logging.info('DB stats call')
+
+        # What season is it?
+        current_season = Season.query.order_by(Season.etime.desc()).first()
+
         # if it's the first run on Monday, check if any of inactive players played in the last week
         if is_it_monday():
             for user in User.query.filter_by(active=2).all():
@@ -39,12 +60,13 @@ class OWstats:
                 db.session.commit()
 
         # get stats for active players
-        for user in User.query.filter_by(active=1).all():
+        for user in User.query.filter_by(active=1).order_by(User.etime.desc()).all():
             platform = user.platform
             region = user.region
             username = user.username
+            last_etime = user.etime
 
-            logging.info(f'processing: {platform}/{region}/{username}')
+            logging.info(f'processing: {platform}/{region}/{username}')       
 
             try:
                 response = get_api_response(platform, region, username)
@@ -88,7 +110,22 @@ class OWstats:
                     games_played = r_json['competitiveStats']['games']['played']
 
                     if user.games_played != games_played:
+
+                        # is it a new season for this user
+                        if games_played < user.games_played:
+
+                            # is it a new season for everyone?
+                            if is_it_new_season(current_season.next_switch_date):
+                                # it's a new season, so we're making a new one!
+                                new_season = Season()
+                                new_season.season = current_season.season + 1
+                                db.session.add(new_season)
+                                db.session.commit()
+                                current_season = new_season
+
                         cs = CompStats()
+
+                        cs.season = current_season.season
                         cs.games_played = games_played
                         cs.games_won = r_json['competitiveStats']['games']['won']
                         cs.rating_avg = r_json['rating']
@@ -130,6 +167,49 @@ def main():
             ow_stats.log_stats_to_db()
             if len(sys.argv) > 1 and sys.argv[1] == '-c':
                 ow_stats.reset_sleep_time()
+
+            if len(sys.argv) == 3 and sys.argv[1] == 'set-season':
+                ow_stats.set_season(int(sys.argv[2]))
+
+            if len(sys.argv) > 1 and sys.argv[1] == 'current':
+                ow_stats.get_season()
+
+            if len(sys.argv) == 3 and sys.argv[1] == 'set-next':
+                ow_stats.set_next(sys.argv[2])
+
+            if len(sys.argv) > 1 and sys.argv[1] in ['-h','--help']:
+                a ="""Usage: OWstats [OPTIONS] COMMAND [ARGS]...
+
+  Hits the Overwatch API and updates stats for all active players in the database.
+
+Options:
+  -h, --help  Show this message and exit.
+  -c          Run continuously in console, don't exit after one run.
+
+Commands:
+  set-season      Creates a new season entry in seasons table
+  current         Display the current season in the database
+  set-next        Set the season switch date 
+                """
+                if len(sys.argv) == 3:
+                    if sys.argv[2] == 'set-season':
+                        a = """Usage: OWstats set-season TEXT
+
+  Creates a new season entry in seasons table with season=TEXT
+                        """
+                    if sys.argv[2] == 'current':
+                        a = """Usage: OWstats current
+
+  Prints the current season from the database.
+                        """
+
+                    if sys.argv[2] == 'set-next':
+                        a = """Usage: OWstats set-next DATE
+
+  Updates the current season's next_switch_date to DATE. DATE should be in YYYY/MM/DD format.
+                    
+                        """
+                print(a)
             else:
                 logging.info('Run finished, exiting.')
                 return

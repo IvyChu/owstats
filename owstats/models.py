@@ -3,6 +3,18 @@ from datetime import datetime
 from owstats import db
 
 
+class Season(db.Model):
+    __tablename__ = 'seasons'
+    id = db.Column(db.Integer, primary_key=True)
+    season = db.Column(db.Integer)
+    next_switch_date = db.Column(db.DateTime, nullable=True)  # find out online
+    ctime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    etime = db.Column(db.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Season {self.season}, next_switch_date:{self.next_switch_date:%Y-%m-%d %H:%M}, etime:{self.etime:%Y-%m-%d %H:%M}>'
+
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
