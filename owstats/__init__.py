@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, flash, redirect, render_template, url_for
+from flask import Flask, flash, redirect, render_template, url_for, request
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -91,6 +91,7 @@ def add_user():
                 return redirect(url_for('stats', username=user.username))
         flash(f"No response from API received. Check connection or something? User not added.", 'warning')
         return redirect(url_for('index'))
+    form.username.data = request.args.get('username')
     return render_template('add_user.html', title='Add user', legend='Add user', form=form)
 
 
@@ -105,7 +106,7 @@ def stats(username):
     form.username.data = username
     flash(
         f"Player {username} doesn't exist in the database. Check spelling or add them.", 'warning')
-    return render_template('add_user.html', title='Add user', legend='Add user', form=form)
+    return redirect(url_for('add_user', username=username))
 
 
 @app.route('/<username>/chart')
