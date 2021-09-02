@@ -36,7 +36,11 @@ class User(db.Model):
 
     games_played = db.Column(db.Integer, default=0)
 
-    comp_stats = db.relationship('CompStats', backref='player', lazy=True, order_by="desc(CompStats.ctime)")
+    comp_stats = db.relationship('CompStats',
+                                 backref='player', 
+                                 lazy=True, 
+                                 order_by="desc(CompStats.ctime)", 
+                                 cascade = "all, delete, delete-orphan" )
 
     active = db.Column(db.Integer, default=1) # 0 if inactive, 1 if active
 
@@ -47,10 +51,13 @@ class User(db.Model):
         return '<User %r>' % self.username
 
     def get_win_percentage(self):
-        latest_stats = self.comp_stats[-1]
+        latest_stats = self.comp_stats[0]
         games_played = latest_stats.games_played
         games_won = latest_stats.games_won
         return round((games_won/games_played)*100, 2)
+
+    def get_seasons(self):
+        return db.session.query(CompStats.season).distinct()
 
 
 
