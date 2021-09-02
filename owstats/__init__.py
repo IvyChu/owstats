@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 from owstats.forms import AddUserForm
-from owstats.utils import get_api_response
+from owstats.utils import get_api_response, make_plot
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OWSTATS_DB')
@@ -60,22 +60,31 @@ def add_user():
                 db.session.add(user)
                 db.session.commit()
 
+                current_season = Season.query.order_by(Season.etime.desc()).first()
+
                 cs = CompStats()
+                cs.season = current_season.season
                 cs.games_played = user.games_played
                 cs.games_won = r_json['competitiveStats']['games']['won']
                 cs.rating_avg = r_json['rating']
-                for rating in r_json['ratings']:
-                    if rating['role'] == 'tank':
-                        cs.rating_tank = rating['level']
-                    if rating['role'] == 'damage':
-                        cs.rating_damage = rating['level']
-                    if rating['role'] == 'support':
-                        cs.rating_support = rating['level']
+                if 'ratings' in r_json and r_json['ratings'] is not None:
+                    for rating in r_json['ratings']:
+                        if rating['role'] == 'tank':
+                            cs.rating_tank = rating['level']
+                        if rating['role'] == 'damage':
+                            cs.rating_damage = rating['level']
+                        if rating['role'] == 'support':
+                            cs.rating_support = rating['level']
+                else:
+                    cs.rating_tank = 0
+                    cs.rating_damage = 0
+                    cs.rating_support = 0
 
                 cs.player = user
 
                 db.session.add(cs)
                 db.session.commit()
+                make_plot(user)
 
                 flash(
                     f'User {user.username} has been added to the database.', 'success')
@@ -104,5 +113,5 @@ def chart(username):
     # show the user profile for that user
     user = User.query.filter_by(username=username).first()
     if user:
-        plot_fn = f"{user.username}_{user.platform}_{user.region}.png"
+        plot_fn = f"{user.username}_{user.platform}_{user.region}_{user.comp_stats[0].season}.png"
         return render_template('user_plots.html', title=username, user=user, plot_fn=plot_fn)
