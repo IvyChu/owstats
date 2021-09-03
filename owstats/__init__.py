@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 from owstats.forms import AddUserForm
-from owstats.utils import get_api_response, make_plot
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OWSTATS_DB')
@@ -16,6 +16,8 @@ migrate = Migrate(app, db)
 
 
 from owstats.models import CompStats, User, Season
+from owstats.utils import get_api_response, make_plot, get_player_seasons
+
 
 @app.route('/')
 def index():
@@ -76,9 +78,9 @@ def add_user():
                         if rating['role'] == 'support':
                             cs.rating_support = rating['level']
                 else:
-                    cs.rating_tank = 0
-                    cs.rating_damage = 0
-                    cs.rating_support = 0
+                    cs.rating_tank = None
+                    cs.rating_damage = None
+                    cs.rating_support = None
 
                 cs.player = user
 
@@ -96,11 +98,15 @@ def add_user():
 
 
 @app.route('/<username>')
-def stats(username):
+@app.route('/<username>/<int:season>')
+def stats(username, season=0):
     # show the user profile for that user
     user = User.query.filter_by(username=username).first()
+    if season == 0:
+        season = Season.query.order_by(Season.etime.desc()).first().season
+    seasons = get_player_seasons(username)
     if user:
-        return render_template('user_stats.html', title=username, user=user)
+        return render_template('user_stats.html', title=username, user=user, season=season, seasons=seasons)
 
     form = AddUserForm()
     form.username.data = username
@@ -109,10 +115,14 @@ def stats(username):
     return redirect(url_for('add_user', username=username))
 
 
-@app.route('/<username>/chart')
-def chart(username):
+@app.route('/chart/<username>')
+@app.route('/chart/<username>/<int:season>')
+def chart(username, season=0):
     # show the user profile for that user
     user = User.query.filter_by(username=username).first()
+    if season == 0:
+        season = Season.query.order_by(Season.etime.desc()).first().season
+    seasons = get_player_seasons(username)
     if user:
-        plot_fn = f"{user.username}_{user.platform}_{user.region}_{user.comp_stats[0].season}.png"
-        return render_template('user_plots.html', title=username, user=user, plot_fn=plot_fn)
+        plot_fn = f"{user.username}_{user.platform}_{user.region}_{season}.png"
+        return render_template('user_plots.html', title=username, user=user, plot_fn=plot_fn, season=season, seasons=seasons)

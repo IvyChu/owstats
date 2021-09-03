@@ -6,17 +6,26 @@
     {% include 'profile_header.html' %}
   </div>
 
+
   <div class="column is-three-fifths-desktop">
+    
+    {% for s in seasons %}
+      <a href="{{ url_for('stats', username=user.username, season=s) }}" class="button is-primary {{ 'is-light' if s!=season else '' }}">
+        Season {{s}}
+      </a>
+    {% endfor %}
+    <hr>
+
     <div class="tabs">
       <ul>
         <li class="is-active">
-          <a href="{{ url_for('stats', username=user.username) }}">
+          <a href="{{ url_for('stats', username=user.username, season=season) }}">
             <span class="icon is-small"><i class="fa fa-table" aria-hidden="true"></i></span>
             <span>Stats</span>
           </a>
         </li>
         <li>
-          <a href="{{ url_for('chart', username=user.username) }}">
+          <a href="{{ url_for('chart', username=user.username, season=season) }}">
             <span class="icon is-small"><i class="fa fa-line-chart " aria-hidden="true"></i></span>
             <span>Chart</span>
           </a>
@@ -51,6 +60,7 @@
         </tfoot>
         <tbody>
             {% for stats in user.comp_stats %}
+            {% if stats.season == season %}
             <tr>
                 <td>{{ stats.games_played }}</td>
                 <td>{{ stats.games_won }}</td>
@@ -61,6 +71,7 @@
                 <td>{{ stats.rating_support }}</td>
                 <td title="{{ stats.ctime.strftime('%H:%M:%S') }}">{{ stats.ctime.strftime('%Y-%m-%d') }}</td>
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>

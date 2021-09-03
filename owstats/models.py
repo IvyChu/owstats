@@ -54,6 +54,8 @@ class User(db.Model):
         latest_stats = self.comp_stats[0]
         games_played = latest_stats.games_played
         games_won = latest_stats.games_won
+        if games_played == 0:
+            return 0
         return round((games_won/games_played)*100, 2)
 
     def get_seasons(self):

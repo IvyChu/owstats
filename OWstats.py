@@ -130,13 +130,18 @@ class OWstats:
                         cs.games_played = games_played
                         cs.games_won = r_json['competitiveStats']['games']['won']
                         cs.rating_avg = r_json['rating']
-                        for rating in r_json['ratings']:
-                            if rating['role'] == 'tank':
-                                cs.rating_tank = rating['level']
-                            if rating['role'] == 'damage':    
-                                cs.rating_damage = rating['level']
-                            if rating['role'] == 'support': 
-                                cs.rating_support = rating['level']
+                        if 'ratings' in r_json and r_json['ratings'] is not None:
+                            for rating in r_json['ratings']:
+                                if rating['role'] == 'tank':
+                                    cs.rating_tank = rating['level']
+                                if rating['role'] == 'damage':
+                                    cs.rating_damage = rating['level']
+                                if rating['role'] == 'support':
+                                    cs.rating_support = rating['level']
+                        else:
+                            cs.rating_tank = None
+                            cs.rating_damage = None
+                            cs.rating_support = None
                         
                         cs.player = user
 

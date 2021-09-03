@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import requests
 
+from owstats import CompStats, User
+
 
 BASE_URL = 'https://ow-api.com/v1/stats'
 
@@ -65,7 +67,7 @@ def make_plot(user, season=0):
     plt.plot(df['Games played'], df['Tank SR'], '.:b', label='Tank SR')
     plt.plot(df['Games played'], df['Damage SR'], '*:r', label='Damage SR')
     plt.plot(df['Games played'], df['Support SR'], '^:c', label='Support SR')
-    plt.title(f'Season {stat.season}: SR changes per role', loc = 'left')
+    plt.title(f'Season {season}: SR changes per role', loc = 'left')
     plt.xlabel('Games played')
     plt.ylabel('SR')
     plt.legend()
@@ -76,3 +78,10 @@ def make_plot(user, season=0):
     plot_path = os.path.join(plot_dir, 'static/plots', plot_fn)
     plt.savefig(plot_path, dpi=100)
     plt.clf()
+
+
+def get_player_seasons(username):
+    seasons = []
+    for season in CompStats.query.join(User).filter_by(username=username).distinct(CompStats.season):
+        seasons.append(season.season)
+    return seasons
