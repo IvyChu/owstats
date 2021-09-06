@@ -13,7 +13,7 @@
                     <th>User</th>
                     <th class="is-hidden-touch">Region</th>
                     <th class="is-hidden-touch">Platform</th>
-                    <th class="is-hidden-mobile">Date added</th>
+                    <th class="is-hidden-mobile">Date updated</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,7 +27,7 @@
                     <td><a href="{{ url_for('stats',username=user.username) }}">{{ user.username }}</a></td>
                     <td class="is-hidden-touch">{{ user.region }}</td>
                     <td class="is-hidden-touch">{{ user.platform }}</td>
-                    <td class="is-hidden-mobile">{{ user.ctime.strftime('%Y-%m-%d') }}</td>
+                    <td class="is-hidden-mobile">{{ user.etime.strftime('%Y-%m-%d') }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

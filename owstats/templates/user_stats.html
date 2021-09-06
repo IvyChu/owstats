@@ -66,9 +66,9 @@
                 <td>{{ stats.games_won }}</td>
 
                 <td>{{ stats.rating_avg }}</td>
-                <td>{{ stats.rating_tank }}</td>
-                <td>{{ stats.rating_damage }}</td>
-                <td>{{ stats.rating_support }}</td>
+                <td>{{ stats.rating_tank or '' }}</td>
+                <td>{{ stats.rating_damage or '' }}</td>
+                <td>{{ stats.rating_support or '' }}</td>
                 <td title="{{ stats.ctime.strftime('%H:%M:%S') }}">{{ stats.ctime.strftime('%Y-%m-%d') }}</td>
             </tr>
             {% endif %}
