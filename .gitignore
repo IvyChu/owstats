@@ -4,6 +4,6 @@ OWstats.csv
 *.db
 *.db-journal
 *__pycache__/
-.vscode/settings.json
+.vscode/
 plots.py
 owstats/static/plots/
