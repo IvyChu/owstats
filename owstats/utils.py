@@ -51,6 +51,7 @@ def make_plot(user, season=0):
         'Damage SR': [],
         'Support SR': []
        }
+    ranks = [1500, 2000, 2500, 3000, 3500]
     
     if season == 0:
         season = user.comp_stats[0].season
@@ -62,6 +63,15 @@ def make_plot(user, season=0):
             data['Damage SR'].append(stat.rating_damage)
             data['Support SR'].append(stat.rating_support)
     
+    # find min and max SR on chart
+    allSR = data['Tank SR'] + data['Damage SR'] + data['Support SR']
+    res = []
+    for val in allSR:
+        if val != None :
+            res.append(val)
+    minSR = min(res)
+    maxSR = max(res)
+
     df = pd.DataFrame(data,columns=['Games played','Tank SR','Damage SR','Support SR'])
     
     plt.plot(df['Games played'], df['Tank SR'], '.:b', label='Tank SR')
@@ -72,6 +82,9 @@ def make_plot(user, season=0):
     plt.ylabel('SR')
     plt.legend()
     plt.grid(axis = 'y')
+    for rank in ranks:
+        if rank > minSR and rank < maxSR:
+            plt.axhline(y=rank, color='r', linestyle='-')
     # plt.show()
     plot_fn = f"{user.username}_{user.platform}_{user.region}_{season}.png"
     plot_dir = os.path.dirname(__loader__.path)
