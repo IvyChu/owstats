@@ -83,7 +83,7 @@ def make_plot(user, season=0):
     plt.legend()
     plt.grid(axis = 'y')
     for rank in ranks:
-        if rank > minSR and rank < maxSR:
+        if rank + 50 > minSR and rank - 50 < maxSR:
             plt.axhline(y=rank, color='r', linestyle='-')
     # plt.show()
     plot_fn = f"{user.username}_{user.platform}_{user.region}_{season}.png"
