@@ -133,11 +133,11 @@ class OWstats:
                         if 'ratings' in r_json and r_json['ratings'] is not None:
                             for rating in r_json['ratings']:
                                 if rating['role'] == 'tank':
-                                    cs.rating_tank = rating['level']
+                                    cs.rating_tank = rating['level'] or None
                                 if rating['role'] == 'damage':
-                                    cs.rating_damage = rating['level']
+                                    cs.rating_damage = rating['level'] or None
                                 if rating['role'] == 'support':
-                                    cs.rating_support = rating['level']
+                                    cs.rating_support = rating['level'] or None
                         else:
                             cs.rating_tank = None
                             cs.rating_damage = None
