@@ -51,7 +51,7 @@ def make_plot(user, season=0):
         'Damage SR': [],
         'Support SR': []
        }
-    ranks = [1500, 2000, 2500, 3000, 3500]
+    ranks = [1500, 2000, 2500, 3000, 3500, 4000]
     
     if season == 0:
         season = user.comp_stats[0].season
