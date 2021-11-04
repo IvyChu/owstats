@@ -69,8 +69,6 @@ def make_plot(user, season=0):
     for val in allSR:
         if val != None :
             res.append(val)
-    minSR = min(res)
-    maxSR = max(res)
 
     df = pd.DataFrame(data,columns=['Games played','Tank SR','Damage SR','Support SR'])
     
@@ -82,9 +80,12 @@ def make_plot(user, season=0):
     plt.ylabel('SR')
     plt.legend()
     plt.grid(axis = 'y')
-    for rank in ranks:
-        if rank + 50 > minSR and rank - 50 < maxSR:
-            plt.axhline(y=rank, color='r', linestyle='-')
+    if res:
+        minSR = min(res)
+        maxSR = max(res)
+        for rank in ranks:
+            if rank + 50 > minSR and rank - 50 < maxSR:
+                plt.axhline(y=rank, color='r', linestyle='-')
     # plt.show()
     plot_fn = f"{user.username}_{user.platform}_{user.region}_{season}.png"
     plot_dir = os.path.dirname(__loader__.path)
