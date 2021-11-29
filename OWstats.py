@@ -55,14 +55,18 @@ class OWstats:
         # What season is it?
         current_season = Season.query.order_by(Season.etime.desc()).first()
 
+        # make list of users that need to be processed
+        users = User.query.filter_by(active=1).order_by(User.etime.desc()).all()
+
         # if it's the first run on Monday, check if any of inactive players played in the last week
         if is_it_monday():
-            for user in User.query.filter_by(active=2).all():
-                user.active = 1
-                db.session.commit()
+            users = users + User.query.filter_by(active=2).all()    # inactive
+            users = users + User.query.filter_by(active=3).all()    # private
+            users = users + User.query.filter_by(active=0).all()    # error
+            
 
         # get stats for active players
-        for user in User.query.filter_by(active=1).order_by(User.etime.desc()).all():
+        for user in users:
             platform = user.platform
             region = user.region
             username = user.username
@@ -100,17 +104,17 @@ class OWstats:
                             break
                     
                     if r_json['private']:
-                        user.active = 0
+                        user.active = 3
                         db.session.commit()
                         break
-
-                    user.endorsement = r_json['endorsement']
-                    user.icon = r_json['icon']
-                    db.session.commit()
 
                     games_played = r_json['competitiveStats']['games']['played']
 
                     if user.games_played != games_played:
+                        
+                        # if there are no placements at all, there is no need to log this
+                        if r_json['rating'] == 0:
+                            break
 
                         # is it a new season for this user
                         if games_played < user.games_played:
@@ -149,6 +153,9 @@ class OWstats:
                         db.session.commit()
 
                         user.games_played = games_played
+                        user.active = 1
+                        user.endorsement = r_json['endorsement']
+                        user.icon = r_json['icon']
                         db.session.commit()
 
                         make_plot(user)
