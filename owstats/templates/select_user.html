@@ -20,6 +20,8 @@
                 {% for user in users %}
                 <tr
                 {% if user.active == 2 %}
+                    class="has-background-grey-darker has-text-grey"
+                {% elif user.active == 3 %}
                     class="has-background-dark has-text-grey"
                 {% endif %}
                 >
