@@ -15,13 +15,16 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-from owstats.models import CompStats, User, Season
+from owstats.models import CompStats, Player, Season
 from owstats.utils import get_api_response, make_plot, get_player_seasons
 
 
 @app.route('/')
 def index():
-    users = User.query.order_by(User.etime.desc()).all()
+    users = Player.query.filter_by(active=1).order_by(Player.etime.desc()).all()
+    users = users + Player.query.filter_by(active=2).all()    # inactive
+    users = users + Player.query.filter_by(active=3).all()    # private
+
     return render_template('select_user.html', title='Select user', legend='Select user', users=users)
 
 
@@ -30,7 +33,7 @@ def add_user():
     form = AddUserForm()
     if form.validate_on_submit():
         # Do we have this user already?
-        user = User.query.filter_by(username=form.username.data).first()
+        user = Player.query.filter_by(username=form.username.data).first()
         if user:
             flash(
                 f'User {user.username} already exists. Here are their collected.', 'success')
@@ -52,7 +55,7 @@ def add_user():
                 return redirect(url_for('index'))
 
             if not r_json['private']:
-                user = User()
+                user = Player()
                 user.username = form.username.data
                 user.region = form.region.data
                 user.platform = form.platform.data
@@ -101,7 +104,7 @@ def add_user():
 @app.route('/<username>/<int:season>')
 def stats(username, season=0):
     # show the user profile for that user
-    user = User.query.filter_by(username=username).first()
+    user = Player.query.filter_by(username=username).first()
     if season == 0:
         season = Season.query.order_by(Season.etime.desc()).first().season
     seasons = get_player_seasons(username)
@@ -119,7 +122,7 @@ def stats(username, season=0):
 @app.route('/chart/<username>/<int:season>')
 def chart(username, season=0):
     # show the user profile for that user
-    user = User.query.filter_by(username=username).first()
+    user = Player.query.filter_by(username=username).first()
     if season == 0:
         season = Season.query.order_by(Season.etime.desc()).first().season
     seasons = get_player_seasons(username)

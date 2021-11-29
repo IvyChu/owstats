@@ -1,6 +1,6 @@
 from flask import render_template
 from owstats import app
-from owstats.models import User
+from owstats.models import Player
 
 @app.route('/')
 def index():
@@ -9,7 +9,7 @@ def index():
 @app.route('/<username>')
 def stats(username):
     # show the user profile for that user
-    user = User.query.filter_by(username=username).first()
+    user = Player.query.filter_by(username=username).first()
     if user:
         return render_template('user_stats.html', title=username, user=user)
     return 'User not found.'

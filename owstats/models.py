@@ -15,7 +15,7 @@ class Season(db.Model):
         return f'<Season {self.season}, etime:{self.etime:%Y-%m-%d %H:%M}>'
 
 
-class User(db.Model):
+class Player(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
 

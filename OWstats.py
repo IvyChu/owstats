@@ -6,7 +6,7 @@ from socket import gaierror
 
 import urllib3
 
-from owstats import CompStats, Season, User, db
+from owstats import CompStats, Season, Player, db
 from owstats.utils import (check_if_more_than_seven_days, get_api_response,
                            is_it_monday, is_it_new_season, make_plot)
 
@@ -56,13 +56,13 @@ class OWstats:
         current_season = Season.query.order_by(Season.etime.desc()).first()
 
         # make list of users that need to be processed
-        users = User.query.filter_by(active=1).order_by(User.etime.desc()).all()
+        users = Player.query.filter_by(active=1).order_by(Player.etime.desc()).all()
 
         # if it's the first run on Monday, check if any of inactive players played in the last week
         if is_it_monday():
-            users = users + User.query.filter_by(active=2).all()    # inactive
-            users = users + User.query.filter_by(active=3).all()    # private
-            users = users + User.query.filter_by(active=0).all()    # error
+            users = users + Player.query.filter_by(active=2).all()    # inactive
+            users = users + Player.query.filter_by(active=3).all()    # private
+            users = users + Player.query.filter_by(active=0).all()    # error
             
 
         # get stats for active players
