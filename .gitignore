@@ -2,6 +2,7 @@
 OWstats.csv
 *.pyc
 *.db
+*.bak
 *.db-journal
 *__pycache__/
 .vscode/

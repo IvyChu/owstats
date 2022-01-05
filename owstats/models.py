@@ -16,17 +16,17 @@ class Season(db.Model):
 
 
 class Player(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'players'
     id = db.Column(db.Integer, primary_key=True)
 
     # platform 	The game platform (pc, etc)
     # region 	The game region (us, eu, asia)
     # battletag 	Your battlenet tag, replacing the # with a -
 
-    battletag = db.Column(db.String(20), unique=True, nullable=True)
+    battletag = db.Column(db.String(20), unique=False, nullable=True)
 
     # battletag doesn't seem to work for psn at the moment
-    username = db.Column(db.String(20), unique=True, nullable=False)
+    username = db.Column(db.String(20), unique=False, nullable=False)
     region = db.Column(db.String(10), unique=False, nullable=False)
     platform = db.Column(db.String(10), unique=False, nullable=False)
 
@@ -67,7 +67,7 @@ class CompStats(db.Model):
     __tablename__ = 'comp_stats'
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
 
     games_played = db.Column(db.Integer)
     games_won = db.Column(db.Integer)
