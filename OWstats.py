@@ -49,7 +49,7 @@ class OWstats:
         current_season = Season.query.order_by(Season.etime.desc()).first()
         print(current_season)
 
-    def log_stats_to_db(self):
+    def log_stats_to_db(self, all=False):
         logging.info('DB stats call')
 
         # What season is it?
@@ -59,7 +59,7 @@ class OWstats:
         users = Player.query.filter_by(active=1).order_by(Player.etime.desc()).all()
 
         # if it's the first run on Monday, check if any of inactive players played in the last week
-        if is_it_monday():
+        if is_it_monday() or all:
             users = users + Player.query.filter_by(active=2).all()    # inactive
             users = users + Player.query.filter_by(active=3).all()    # private
             users = users + Player.query.filter_by(active=0).all()    # error
@@ -230,7 +230,10 @@ Commands:
 
 
         try:
-            ow_stats.log_stats_to_db()
+            if len(sys.argv) > 1 and sys.argv[1] == '-a':
+                ow_stats.log_stats_to_db(all=True)
+            else:
+                ow_stats.log_stats_to_db()
             if len(sys.argv) > 1 and sys.argv[1] == '-c':
                 ow_stats.reset_sleep_time()
             else:
@@ -247,6 +250,7 @@ Commands:
             print("\n\nAn error in the main loop was caught.")
             logging.exception("An error in the main loop was caught")
             ow_stats.increase_sleep_time()
+            return
 
         print(f"sleep time: {ow_stats.sleep_time}")
         time.sleep(ow_stats.sleep_time)
