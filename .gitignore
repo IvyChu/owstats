@@ -8,4 +8,6 @@ OWstats.csv
 .vscode/
 plots.py
 test.py
+passenger_wsgi.py
 owstats/static/plots/
+public/
