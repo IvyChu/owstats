@@ -7,4 +7,5 @@ OWstats.csv
 *__pycache__/
 .vscode/
 plots.py
+test.py
 owstats/static/plots/
