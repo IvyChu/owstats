@@ -96,6 +96,6 @@ def make_plot(user, season=0):
 
 def get_player_seasons(username):
     seasons = []
-    for season in CompStats.query.join(Player).filter_by(username=username).distinct(CompStats.season):
+    for season in CompStats.query.join(Player).filter_by(username=username).distinct(CompStats.season).order_by(CompStats.season.desc()):
         seasons.append(season.season)
     return seasons
