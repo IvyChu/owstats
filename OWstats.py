@@ -57,6 +57,7 @@ class OWstats:
 
         # make list of users that need to be processed
         users = Player.query.filter_by(active=1).order_by(Player.etime.desc()).all()
+        logging.info(f'users: {users}')
 
         # if it's the first run on Monday, check if any of inactive players played in the last week
         if is_it_monday() or all:
@@ -98,15 +99,15 @@ class OWstats:
                         if r_json['error'] == "Player not found":
                             user.active = 0
                             db.session.commit()
-                            break
+                            continue
                         else:
                             logging.error(f"json.error: {r_json['error']}")
-                            break
+                            continue
                     
                     if r_json['private']:
                         user.active = 3
                         db.session.commit()
-                        break
+                        continue
 
                     games_played = r_json['competitiveStats']['games']['played']
 
@@ -114,7 +115,8 @@ class OWstats:
                         
                         # if there are no placements at all, there is no need to log this
                         if r_json['rating'] == 0:
-                            break
+                            logging.info('No rating yet for this player.')
+                            continue
 
                         # is it a new season for this user
                         if games_played < user.games_played:
@@ -127,6 +129,7 @@ class OWstats:
                                 db.session.add(new_season)
                                 db.session.commit()
                                 current_season = new_season
+                                logging.info(f'New season created: {new_season}')
 
                         cs = CompStats()
 
@@ -159,9 +162,11 @@ class OWstats:
                         db.session.commit()
 
                         make_plot(user)
+                        logging.info('Made plot')
                     elif check_if_more_than_seven_days(user.comp_stats[0].ctime):
                         user.active = 2     # inactive for a week or more
                         db.session.commit()
+                        logging.info('User set to inactive')
 
                 except KeyError:
                     print('\n\nKeyError - API mapping issue?')
