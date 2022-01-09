@@ -50,25 +50,25 @@
     <table class="table is-fullwidth is-hoverable">
         <thead>
             <tr>
-                <th><abbr title="Games played">GP</abbr></th>
-                <th><abbr title="Won">W</abbr></th>
+                <th><abbr title="Games played">Games</abbr></th>
+                <th class="is-hidden-touch"><abbr title="Won">Wins</abbr></th>
                 <!-- <th><abbr title="Win percentage">WP</abbr></th> -->
-                <th><abbr title="Rating average">RA</abbr></th>
-                <th><abbr title="Rating tank">RT</abbr></th>
-                <th><abbr title="Rating damage">RD</abbr></th>
-                <th><abbr title="Rating support">RS</abbr></th>
+                <th class="is-hidden-touch"><abbr title="Rating average">Average</abbr></th>
+                <th><abbr title="Rating tank">Tank</abbr></th>
+                <th><abbr title="Rating damage">DPS</abbr></th>
+                <th><abbr title="Rating support">Support</abbr></th>
                 <th><abbr title="Date logged">Date</abbr></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th><abbr title="Games played">GP</abbr></th>
-                <th><abbr title="Won">W</abbr></th>
+                <th><abbr title="Games played">Games</abbr></th>
+                <th class="is-hidden-touch"><abbr title="Won">Wins</abbr></th>
                 <!-- <th><abbr title="Win percentage">WP</abbr></th> -->
-                <th><abbr title="Rating average">RA</abbr></th>
-                <th><abbr title="Rating tank">RT</abbr></th>
-                <th><abbr title="Rating damage">RD</abbr></th>
-                <th><abbr title="Rating support">RS</abbr></th>
+                <th class="is-hidden-touch"><abbr title="Rating average" >Average</abbr></th>
+                <th><abbr title="Rating tank">Tank</abbr></th>
+                <th><abbr title="Rating damage">DPS</abbr></th>
+                <th><abbr title="Rating support">Support</abbr></th>
                 <th><abbr title="Date logged">Date</abbr></th>
             </tr>
         </tfoot>
@@ -77,9 +77,9 @@
             {% if stats.season == season %}
             <tr>
                 <td>{{ stats.games_played }}</td>
-                <td>{{ stats.games_won }}</td>
+                <td class="is-hidden-touch">{{ stats.games_won }}</td>
 
-                <td>{{ stats.rating_avg }}</td>
+                <td class="is-hidden-touch">{{ stats.rating_avg }}</td>
                 <td>{{ stats.rating_tank or '' }}</td>
                 <td>{{ stats.rating_damage or '' }}</td>
                 <td>{{ stats.rating_support or '' }}</td>
