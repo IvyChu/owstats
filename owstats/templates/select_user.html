@@ -28,7 +28,7 @@
                     class="has-background-dark has-text-grey"
                 {% endif %}
                 >
-                    <td><figure class="image is-128x128"><img  src="{{ user.icon }}"></figure></td>
+                    <td><a href="{{ url_for('stats',username=user.username) }}"><figure class="image is-128x128"><img  src="{{ user.icon }}"></figure></a></td>
                     <td><a href="{{ url_for('stats',username=user.username) }}">{{ user.username }}</a></td>
                     <td class="is-hidden-touch">{{ user.region }}</td>
                     <td class="is-hidden-touch">{{ user.platform }}</td>
