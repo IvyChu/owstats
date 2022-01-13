@@ -33,11 +33,11 @@ def add_user():
     form = AddUserForm()
     if form.validate_on_submit():
         # Do we have this user already?
-        user = Player.query.filter_by(username=form.username.data).first()
-        if user:
+        player = Player.query.filter_by(username=form.username.data).first()
+        if player:
             flash(
-                f'User {user.username} already exists. Here are their collected.', 'success')
-            return redirect(url_for('stats', username=user.username))
+                f'Player {player.username} already exists. Here are their collected.', 'success')
+            return redirect(url_for('stats', username=player.username))
 
         # User not in DB yet, let's check if they exist in OW
         try:
@@ -55,21 +55,21 @@ def add_user():
                 return redirect(url_for('index'))
 
             if not r_json['private']:
-                user = Player()
-                user.username = form.username.data
-                user.region = form.region.data
-                user.platform = form.platform.data
-                user.games_played = r_json['competitiveStats']['games']['played']
-                user.endorsement = r_json['endorsement']
-                user.icon = r_json['icon']
-                db.session.add(user)
+                player = Player()
+                player.username = form.username.data
+                player.region = form.region.data
+                player.platform = form.platform.data
+                player.games_played = r_json['competitiveStats']['games']['played']
+                player.endorsement = r_json['endorsement']
+                player.icon = r_json['icon']
+                db.session.add(player)
                 db.session.commit()
 
                 current_season = Season.query.order_by(Season.etime.desc()).first()
 
                 cs = CompStats()
                 cs.season = current_season.season
-                cs.games_played = user.games_played
+                cs.games_played = player.games_played
                 cs.games_won = r_json['competitiveStats']['games']['won']
                 cs.rating_avg = r_json['rating']
                 if 'ratings' in r_json and r_json['ratings'] is not None:
@@ -85,31 +85,31 @@ def add_user():
                     cs.rating_damage = None
                     cs.rating_support = None
 
-                cs.player = user
+                cs.player = player
 
                 db.session.add(cs)
                 db.session.commit()
-                make_plot(user)
+                make_plot(player)
 
                 flash(
-                    f'User {user.username} has been added to the database.', 'success')
-                return redirect(url_for('stats', username=user.username))
-        flash(f"No response from API received. Check connection or something? User not added.", 'warning')
+                    f'Player {player.username} has been added to the database.', 'success')
+                return redirect(url_for('stats', username=player.username))
+        flash(f"No response from API received. Check connection or something? Player not added.", 'warning')
         return redirect(url_for('index'))
     form.username.data = request.args.get('username')
-    return render_template('add_user.html', title='Add user', legend='Add user', form=form)
+    return render_template('add_user.html', title='Add player', legend='Add player', form=form)
 
 
 @app.route('/<username>')
 @app.route('/<username>/<int:season>')
 def stats(username, season=0):
-    # show the user profile for that user
-    user = Player.query.filter_by(username=username).first()
+    # show the player profile for that player
+    player = Player.query.filter_by(username=username).first()
     if season == 0:
         season = Season.query.order_by(Season.etime.desc()).first().season
     seasons = get_player_seasons(username)
-    if user:
-        return render_template('user_stats.html', title=username, user=user, season=season, seasons=seasons)
+    if player:
+        return render_template('user_stats.html', title=username, user=player, season=season, seasons=seasons)
 
     form = AddUserForm()
     form.username.data = username
@@ -121,11 +121,11 @@ def stats(username, season=0):
 @app.route('/chart/<username>')
 @app.route('/chart/<username>/<int:season>')
 def chart(username, season=0):
-    # show the user profile for that user
-    user = Player.query.filter_by(username=username).first()
+    # show the player profile for that player
+    player = Player.query.filter_by(username=username).first()
     if season == 0:
         season = Season.query.order_by(Season.etime.desc()).first().season
     seasons = get_player_seasons(username)
-    if user:
-        plot_fn = f"{user.username}_{user.platform}_{user.region}_{season}.png"
-        return render_template('user_plots.html', title=username, user=user, plot_fn=plot_fn, season=season, seasons=seasons)
+    if player:
+        plot_fn = f"{player.username}_{player.platform}_{player.region}_{season}.png"
+        return render_template('user_plots.html', title=username, user=player, plot_fn=plot_fn, season=season, seasons=seasons)
