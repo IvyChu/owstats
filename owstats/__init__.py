@@ -94,6 +94,9 @@ def add_user():
                 flash(
                     f'Player {player.username} has been added to the database.', 'success')
                 return redirect(url_for('stats', username=player.username))
+            else:
+                flash(f"{form.username.data} has a private profile. The profile needs to be public in order to collect stats. Player not added.", 'warning')
+                return redirect(url_for('index'))
         flash(f"No response from API received. Check connection or something? Player not added.", 'warning')
         return redirect(url_for('index'))
     form.username.data = request.args.get('username')
