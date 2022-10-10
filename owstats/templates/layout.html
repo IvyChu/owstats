@@ -5,6 +5,29 @@
 
 <body>
   <section role="main" class="section">
+
+    <div class="columns">
+      <div class="column is-hidden-touch"></div>
+      <div class="column is-three-fifths-desktop">
+        <article class="message is-primary">
+          <div class="message-header">
+            <p>Welp... There goes my SR</p>
+          </div>
+          <div class="message-body">
+            Overwatch 2 is here! But it has no SR visible to the players or third parties that might want to log it. 
+            That includes OWSRstats, obviously. The last data gathered here were from the day Overwatch 1 servers went down.
+            You can access them as usual, but there will be no updates until Blizzard lets us get some new stats. 
+            If anything changes, I'll be happy to update the tracker and start logging again. Until then, we're on a break.<br/><br/>
+            Now go win some games.
+            <br/><br/>
+          </div>
+        </article>
+      </div>
+      <div class="column is-hidden-touch"></div>
+    </div>
+
+    
+
     <nav class="breadcrumb is-centered" aria-label="breadcrumbs">
       <ul>
         <li><a href="{{ url_for('index')}}">OWstats</a></li>
@@ -21,7 +44,7 @@
       {% if messages %}
       <div class="columns">
         <div class="column is-hidden-touch"></div>
-        <div class="column is-four-fifths-desktop">
+        <div class="column is-three-fifths-desktop">
           {% for category, message in messages %}
           <article class="message is-{{ category }}">
             <div class="message-body">
